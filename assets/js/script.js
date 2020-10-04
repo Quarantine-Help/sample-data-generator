@@ -20,9 +20,12 @@ $("#submitButton").click(function() {
     cache: false,
     processData: false,
     contentType: "application/json",
-    success: function(data) {},
+    success: function(data) {
+      window.alert("Successfully created dummy data.");
+    },
     error: function() {
       console.log("error");
+      window.alert(error);
     }
   });
   $("#postTarget").removeAttr("disabled");
