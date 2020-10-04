@@ -37,4 +37,4 @@ class DataPoster(object):
         if request_response.status_code == http.HTTPStatus.OK:
             return True
 
-        return False
+        return request_response.json()

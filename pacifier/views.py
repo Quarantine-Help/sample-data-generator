@@ -1,3 +1,5 @@
+import http
+
 from django.shortcuts import render
 
 # Create your views here.
@@ -28,5 +30,5 @@ class DataPacifierAPIView(APIView):
             target=request_data.get("target", "staging"),
             data=dummy_data,
         )
-        data_poster.post_to_target()
-        return Response({"success": True})
+        post_response = data_poster.post_to_target()
+        return Response({"createdData": post_response}, status=http.HTTPStatus.OK)

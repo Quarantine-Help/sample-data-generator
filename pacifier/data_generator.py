@@ -1,4 +1,5 @@
 import logging
+import time
 import typing
 
 import pycountry as pycountry
@@ -81,7 +82,7 @@ class DataGenerator(object):
             user_data = {
                 "firstName": self.faker.first_name(),
                 "lastName": self.faker.first_name(),
-                "email": self.faker.email(),
+                "email": self.randomize_email(self.faker.email()),
             }
             fake_data["user"] = user_data
             fake_data["position"] = {
@@ -143,3 +144,7 @@ class DataGenerator(object):
         country_alpha_2 = pycountry.countries.get(alpha_3=alpha_three_code).alpha_2
         self.countries_alpha_maps.update({alpha_three_code: country_alpha_2})
         return country_alpha_2
+
+    def randomize_email(self, email=None):
+        id_part, domain_part = email.split("@")
+        return f"{id_part}-{time.time()}@{domain_part}"
