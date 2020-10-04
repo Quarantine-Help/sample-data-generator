@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 
 from pacifier.data_generator import DataGenerator
+from pacifier.data_poster import DataPoster
 from pacifier.serializers import DataPacifierSerializer
 
 
@@ -21,8 +22,11 @@ class DataPacifierAPIView(APIView):
             longitude=request_data.get("position")["longitude"],
             amount=request_data.get("amount", 10),
         )
-        dummy_data = data_generator.genearte_and_post_dummy_data(
+        dummy_data = data_generator.generate_dummy_data()
+        data_poster = DataPoster(
             auth_key=request_data.get("authKey", ""),
             target=request_data.get("target", "staging"),
+            data=dummy_data,
         )
+        data_poster.post_to_target()
         return Response({"success": True})

@@ -1,8 +1,7 @@
-import http
-import json
 import logging
 import typing
 
+import pycountry as pycountry
 import requests
 from django.conf import settings
 from faker import Faker
@@ -15,10 +14,7 @@ class DataGenerator(object):
     latitude = None
     amount = None
     HERE_MAPS_BROWSE_API = "https://browse.search.hereapi.com/v1/browse"
-    TARGET_URLS = {
-        "staging": "https://stage-api.quarantinehelp.space/api/v1/auth/",
-        "production": "https://api.quarantinehelp.space/",
-    }
+    countries_alpha_maps: typing.Dict[str, str] = {}
 
     def __init__(self, type, latitude, longitude, amount=10):
         self.type = type
@@ -27,6 +23,7 @@ class DataGenerator(object):
         self.amount = amount
         self.faker: Faker = Faker("en")
         self.faker.add_provider(E164Provider)
+        self.countries_alpha_maps = {}
 
     def prettify_post_code(self, post_code=None):
         """
@@ -45,9 +42,7 @@ class DataGenerator(object):
 
         return post_code
 
-    def process_and_post_dummy_data(
-        self, places_information: typing.List, auth_key: str, target: str
-    ):
+    def generate_dummy_participant_data(self, places_information: typing.List):
         """
         We need data of the format:
         {
@@ -110,11 +105,11 @@ class DataGenerator(object):
                 region_code="GB", valid=True, possible=True
             )
             fake_data["city"] = address_information["city"]
-            fake_data["country"] = address_information["countryCode"]
+            fake_data["country"] = self.transform_to_alpha2(
+                address_information["countryCode"]
+            )
             fake_data["crisis"] = 1
-            self.post_to_target(fake_data=fake_data, auth_key=auth_key, target=target)
             faked_data.append(fake_data)
-
         return faked_data
 
     def get_places_nearby(self):
@@ -133,30 +128,18 @@ class DataGenerator(object):
         # Now we have like 10 results. Return them for future processing.
         return here_maps_result_decoded["items"]
 
-    def genearte_and_post_dummy_data(self, auth_key=None, target="staging"):
+    def generate_dummy_data(self):
         # First, we need to get amount places nearby
         places_nearby = self.get_places_nearby()
-        dummy_data = self.process_and_post_dummy_data(
-            places_information=places_nearby, auth_key=auth_key, target=target
+        return self.generate_dummy_participant_data(places_information=places_nearby)
+
+    def transform_to_alpha2(self, alpha_three_code=None):
+        alpha_three_code_from_cache = self.countries_alpha_maps.get(
+            alpha_three_code, None
         )
-
-        return dummy_data
-
-    def post_to_target(self, fake_data, auth_key=None, target="staging"):
-        """
-        Does the actual POST to target
-        :param fake_data:
-        :return:
-        """
-        request_response = requests.post(
-            url=f"{self.TARGET_URLS.get(target)}/api/v1/auth/register/",
-            data=json.dumps(fake_data),
-            headers={
-                "Authorization": f"Token {auth_key}",
-                "Content-Type": "application/json",
-            },
-        )
-        if request_response.status_code == http.HTTPStatus.OK:
-            return True
-
-        return False
+        if alpha_three_code_from_cache:
+            return alpha_three_code_from_cache
+        # Else lookup from pycountries
+        country_alpha_2 = pycountry.countries.get(alpha_3=alpha_three_code).alpha_2
+        self.countries_alpha_maps.update({alpha_three_code: country_alpha_2})
+        return country_alpha_2

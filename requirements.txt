@@ -12,6 +12,7 @@ idna==2.10
 importlib-metadata==2.0.0
 Markdown==3.2.2
 phonenumberslite==8.12.10
+pycountry==20.7.3
 python-dateutil==2.8.1
 pytz==2020.1
 requests==2.24.0
