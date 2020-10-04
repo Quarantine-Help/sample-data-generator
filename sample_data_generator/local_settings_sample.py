@@ -18,3 +18,5 @@ DATABASES = {
     }
 }
 
+HERE_MAPS_API_KEY = "123123"
+

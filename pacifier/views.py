@@ -4,6 +4,8 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+
+from pacifier.data_generator import DataGenerator
 from pacifier.serializers import DataPacifierSerializer
 
 
@@ -12,4 +14,12 @@ class DataPacifierAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         request_data = self.serializer_class(request.data).data
+
+        data_generator = DataGenerator(
+            type=request_data.get("type", "AF"),
+            latitude=request_data.get("position")["latitude"],
+            longitude=request_data.get("position")["longitude"],
+            amount=request_data.get("amount", 10)
+        )
+        dummy_data = data_generator.genearte_dummy_data()
         return Response({"success": True})
