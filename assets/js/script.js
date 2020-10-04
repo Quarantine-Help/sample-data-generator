@@ -1,6 +1,6 @@
 $("#submitButton").click(function() {
   // Prep some data and POST ?
-  $("#postTarget").attr("disabled", true);
+  $("#submitButton").prop("disabled", true);
   const postUrl = $("#postTarget").val();
 
   const postData = {
@@ -22,11 +22,12 @@ $("#submitButton").click(function() {
     contentType: "application/json",
     success: function(data) {
       window.alert("Successfully created dummy data.");
+      $("#submitButton").removeAttr("disabled");
     },
-    error: function() {
+    error: function(error) {
       console.log("error");
-      window.alert(error);
+      window.alert("Failed to upload");
+      $("#submitButton").removeAttr("disabled");
     }
   });
-  $("#postTarget").removeAttr("disabled");
 });
