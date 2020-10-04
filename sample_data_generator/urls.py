@@ -22,5 +22,5 @@ from sample_data_generator.views import HomePageView
 
 urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
-    path("data-pacifier/", include("pacifier.urls")),
+    path("api/v1/data-pacifier/", include("pacifier.urls")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

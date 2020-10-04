@@ -2,14 +2,14 @@
 {% load static %}
 {% block body %}
     <div class="container" style="padding-top: 10%; width:100%; max-width:
-    80%; text-align: center" >
+    80%; text-align: center">
         <div class="row" style="display: block">
             <div class="alert alert-info" role="alert">
                 <h4 class="alert-heading">Information</h4>
                 <p>Ask one of the maintainers for your API Key. Find the
                     latitude and longitude of the place you want to create
                     participants around using: <a href="https://www.latlong
-                    .net/" target="_blank" > https://www.latlong.net/</a>.
+                    .net/" target="_blank"> https://www.latlong.net/</a>.
                     Paste the latitude and longitude here and Go.
                 </p>
             </div>
@@ -17,6 +17,8 @@
         <div class="form-row">
             <div class="col-md-12">
                 <form class="form-inline">
+                    <input type="hidden" id="postTarget" name="postTarget"
+                           value="{{ postTargetAPI }}">
                     <span>I want to create </span>
                     <div class="form-group mx-sm-3 mb-2">
                         <input type="number" min="1" max="20"
@@ -49,10 +51,11 @@
                     <span> longitude and  my API Key is</span>
                     <div class="form-group mx-sm-3 mb-2">
                         <input type="password" class="form-control"
-                               id="inputPassword2"
+                               id="apiToken"
                                placeholder="API Token here ">
                     </div>
-                    <button type="submit" class="btn btn-primary mb-2">Go
+                    <button type="button" id="submitButton" class="btn
+                    btn-primary mb-2">Go
                     </button>
                 </form>
             </div>

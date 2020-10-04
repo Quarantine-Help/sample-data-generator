@@ -1,45 +1,45 @@
 {% load static %}
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     {% block meta %} {% endblock %}
-      <link
-      rel="stylesheet"
-      href="{% static 'css/styles.css' %}"
-      crossorigin="anonymous"
+    <link
+            rel="stylesheet"
+            href="{% static 'css/styles.css' %}"
+            crossorigin="anonymous"
     />
 
     <link
-      rel="stylesheet"
-      href="{% static 'css/bootstrap.css' %}"
-      crossorigin="anonymous"
+            rel="stylesheet"
+            href="{% static 'css/bootstrap.css' %}"
+            crossorigin="anonymous"
     />
-    <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
+    <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
     <script
-      src="{% static 'js/popper.min.js' %}"
-      crossorigin="anonymous"
+            src="{% static 'js/popper.min.js' %}"
+            crossorigin="anonymous"
     ></script>
     <script
-      src="{% static 'js/bootstrap.min.js' %}"
-      crossorigin="anonymous"
+            src="{% static 'js/bootstrap.js' %}"
+            crossorigin="anonymous"
     ></script>
-  </head>
-  <body>
-    <!-- prettier-ignore -->
-    {% block navigation_bar %}
+</head>
+<body>
+<!-- prettier-ignore -->
+{% block navigation_bar %}
     <!-- prettier-ignore -->
     {% include 'base/navbar.html' %}
     <!-- prettier-ignore -->
-    {% endblock %}
-    <!-- prettier-ignore -->
-    <main class="container-main" role="main" style="padding-bottom: 5%">
+{% endblock %}
+<!-- prettier-ignore -->
+<main class="container-main" role="main" style="padding-bottom: 5%">
     <!-- prettier-ignore -->
     {% block body %} {% endblock body %}
     <!-- prettier-ignore -->
 </main>
-    <!-- prettier-ignore -->
-    <footer class="footer footer-bottom">
+<!-- prettier-ignore -->
+<footer class="footer footer-bottom">
     {% block footer %}
 
         <!-- prettier-ignore -->
@@ -48,6 +48,10 @@
 
     {% endblock footer %}
 </footer>
-  </body>
-  {% block scripts %} {% endblock %}
+</body>
+{% block scripts %}
+    <script src="{% static 'js/script.js' %}"></script>
+
+{% endblock %}
+
 </html>
