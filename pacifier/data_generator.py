@@ -1,3 +1,5 @@
+import http
+import json
 import logging
 import typing
 
@@ -13,6 +15,10 @@ class DataGenerator(object):
     latitude = None
     amount = None
     HERE_MAPS_BROWSE_API = "https://browse.search.hereapi.com/v1/browse"
+    TARGET_URLS = {
+        "staging": "https://stage-api.quarantinehelp.space/api/v1/auth/",
+        "production": "https://api.quarantinehelp.space/",
+    }
 
     def __init__(self, type, latitude, longitude, amount=10):
         self.type = type
@@ -39,7 +45,9 @@ class DataGenerator(object):
 
         return post_code
 
-    def generate_user_data(self, places_information: typing.List):
+    def process_and_post_dummy_data(
+        self, places_information: typing.List, auth_key: str, target: str
+    ):
         """
         We need data of the format:
         {
@@ -71,8 +79,7 @@ class DataGenerator(object):
             address_information = place_information["address"]
             post_code = address_information.get("postalCode", None)
             if not post_code:
-                logging.info(f"Skipping: {place_information} due to no post "
-                             f"code")
+                logging.info(f"Skipping: {place_information} due to no post " f"code")
                 continue
 
             fake_data = {"postCode": self.prettify_post_code(post_code)}
@@ -80,50 +87,76 @@ class DataGenerator(object):
                 "firstName": self.faker.first_name(),
                 "lastName": self.faker.first_name(),
                 "email": self.faker.email(),
-                "password": self.faker.password()
             }
             fake_data["user"] = user_data
             fake_data["position"] = {
                 "longitude": place_information["position"]["lng"],
-                "latitude": place_information["position"]["lat"]
+                "latitude": place_information["position"]["lat"],
             }
             fake_data["type"] = self.type
             if place_information["resultType"] == "houseNumber":
-                fake_data["firstLineOfAddress"] = \
-                    f"{address_information['street']}" \
+                fake_data["firstLineOfAddress"] = (
+                    f"{address_information['street']}"
                     f" {address_information['houseNumber']}"
+                )
             else:
                 fake_data["firstLineOfAddress"] = address_information["street"]
 
             fake_data["placeId"] = place_information["id"]
             fake_data["secondLineOfAddress"] = address_information.get(
-                "district", "-/-")
-            fake_data["phone"] = self.faker.e164(region_code="GB",
-                                                 valid=True, possible=True)
+                "district", "-/-"
+            )
+            fake_data["phone"] = self.faker.e164(
+                region_code="GB", valid=True, possible=True
+            )
             fake_data["city"] = address_information["city"]
             fake_data["country"] = address_information["countryCode"]
             fake_data["crisis"] = 1
+            self.post_to_target(fake_data=fake_data, auth_key=auth_key, target=target)
             faked_data.append(fake_data)
 
         return faked_data
 
     def get_places_nearby(self):
         here_maps_result = requests.get(
-            f"{self.HERE_MAPS_BROWSE_API}", params={
+            f"{self.HERE_MAPS_BROWSE_API}",
+            params={
                 "apiKey": settings.HERE_MAPS_API_KEY,
                 "at": f"{self.latitude},{self.longitude}",
                 "additionaldata": "Country2",
                 "resultTypes": "street,houseNumber",
                 "limit": self.amount,
-                "in": f"circle:{self.latitude},{self.longitude};r=2500000"
-            }
+                "in": f"circle:{self.latitude},{self.longitude};r=2500000",
+            },
         )
         here_maps_result_decoded = here_maps_result.json()
         # Now we have like 10 results. Return them for future processing.
         return here_maps_result_decoded["items"]
 
-    def genearte_dummy_data(self):
+    def genearte_and_post_dummy_data(self, auth_key=None, target="staging"):
         # First, we need to get amount places nearby
         places_nearby = self.get_places_nearby()
-        dummy_data = self.generate_user_data(places_information=places_nearby)
+        dummy_data = self.process_and_post_dummy_data(
+            places_information=places_nearby, auth_key=auth_key, target=target
+        )
+
         return dummy_data
+
+    def post_to_target(self, fake_data, auth_key=None, target="staging"):
+        """
+        Does the actual POST to target
+        :param fake_data:
+        :return:
+        """
+        request_response = requests.post(
+            url=f"{self.TARGET_URLS.get(target)}/api/v1/auth/register/",
+            data=json.dumps(fake_data),
+            headers={
+                "Authorization": f"Token {auth_key}",
+                "Content-Type": "application/json",
+            },
+        )
+        if request_response.status_code == http.HTTPStatus.OK:
+            return True
+
+        return False

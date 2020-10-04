@@ -19,7 +19,10 @@ class DataPacifierAPIView(APIView):
             type=request_data.get("type", "AF"),
             latitude=request_data.get("position")["latitude"],
             longitude=request_data.get("position")["longitude"],
-            amount=request_data.get("amount", 10)
+            amount=request_data.get("amount", 10),
         )
-        dummy_data = data_generator.genearte_dummy_data()
+        dummy_data = data_generator.genearte_and_post_dummy_data(
+            auth_key=request_data.get("authKey", ""),
+            target=request_data.get("target", "staging"),
+        )
         return Response({"success": True})
