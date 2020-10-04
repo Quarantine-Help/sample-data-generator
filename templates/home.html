@@ -1,0 +1,62 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block body %}
+    <div class="container" style="padding-top: 10%; width:100%; max-width:
+    80%; text-align: center" >
+        <div class="row" style="display: block">
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">Information</h4>
+                <p>Ask one of the maintainers for your API Key. Find the
+                    latitude and longitude of the place you want to create
+                    participants around using: <a href="https://www.latlong
+                    .net/" target="_blank" > https://www.latlong.net/</a>.
+                    Paste the latitude and longitude here and Go.
+                </p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-12">
+                <form class="form-inline">
+                    <span>I want to create </span>
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="number" min="1" max="20"
+                               class="form-control"
+                               id="amount"
+                               placeholder="10">
+                    </div>
+                    AF participants on
+                    <div class="form-group mx-sm-3 mb-2">
+                        <select class="form-control" id="target">
+                            <option value="local">local</option>
+                            <option value="staging">staging</option>
+                            <option value="production">production</option>
+                        </select>
+                    </div>
+                    <span> app around </span>
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="number" min="-90" max="90" step="0.001"
+                               class="form-control"
+                               id="latitude"
+                               placeholder="48.198">
+                    </div>
+                    <span> latitude and </span>
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="number" min="-180" max="180" step="0.001"
+                               class="form-control"
+                               id="longitude"
+                               placeholder="2.710">
+                    </div>
+                    <span> longitude and  my API Key is</span>
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="password" class="form-control"
+                               id="inputPassword2"
+                               placeholder="API Token here ">
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Go
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}
