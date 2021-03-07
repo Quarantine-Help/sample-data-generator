@@ -10,8 +10,8 @@ class DataPoster(object):
     data = None
 
     TARGET_URLS = {
-        "staging": "https://stage-api.quarantinehelp.space",
-        "production": "https://api.quarantinehelp.space",
+        "staging": "https://stage-api.quarantine-help.space",
+        "production": "https://api.quarantine-help.space",
         "local": "http://127.0.0.1:8000",
     }
 
